@@ -9,11 +9,10 @@ Code structure
 The Github repository also contains the code to source and modify the additional labour market indicators (code\_database\_labour\_indicators.py). 
 
 The adjusted code specifically concerns: 
-\begin{itemize}
-    \item enter the folder Baseline SVAR
-    \item BFM\_Main\_adjusted 
-    \item Modifications to Functions (IRFs\_macro\_adjusted.m)
-    \item Modifications to the folder Data (BFM\_data\_adjusted.xlsx)
-\end{itemize}
+
+    - enter the folder Baseline SVAR
+    - BFM\_Main\_adjusted 
+    - Modifications to Functions (IRFs\_macro\_adjusted.m)
+    - Modifications to the folder Data (BFM\_data\_adjusted.xlsx)
 
 The full replication package can be found https://www.openicpsr.org/openicpsr/project/123881/version/V1/view?path=/openicpsr/123881/fcr:versions/V1&type=project. 
