@@ -1,0 +1,67 @@
+'''Programme to construct a database for the Macro Mini Project'''
+
+import pandas as pd
+import numpy as np
+from fredapi import Fred
+
+# API KEY: a652da2c632cee94bb63b9d53980341b
+
+
+# Fetch the following indicators from the FRED database
+
+api_key = 'a652da2c632cee94bb63b9d53980341b'
+employment_indicators = ['LREM25TTUSM156S', 'LREM25MAUSM156S', 'LREM25FEUSM156S', 'UNRATE', 'LNS14000001', 'LNS14000002', 'LNS14000006',
+'LNS14000031', 'LNS14000032', 'LNS14000009', 'LNU04000034','LNU04000035',  'LNS11300060', 'LNS11300002', 'LNS11300001', 'LNS11300006', 'LNS11300031', 'LNS11300032', 'LNS11300009', 'LNU01300034', 'LNU01300035']
+
+
+# Initialize Fred API
+fred = Fred(api_key=api_key)
+
+# Initialize an empty DataFrame for concatenation
+combined_df = pd.DataFrame()
+
+# Iterate and fetch data for each indicator
+for indicator in employment_indicators:
+    data = fred.get_series(indicator)
+    if combined_df.empty:
+        combined_df = data.to_frame(name=indicator)
+    else:
+        combined_df = combined_df.join(data.to_frame(name=indicator), how='outer')
+
+# Reset index to make the date a column
+combined_df.reset_index(inplace=True)
+combined_df.rename(columns={'index': 'Date'}, inplace=True)
+combined_df = combined_df[(combined_df['Date'] >= '1980-01-01')]
+
+# Display the DataFrame
+print(combined_df.head())
+
+
+# Aggregate to quarterly data 
+combined_df['Date'] = pd.to_datetime(combined_df['Date'])
+combined_df.set_index('Date', inplace=True)
+
+quarterly_df = combined_df.resample('Q').mean()
+
+print(quarterly_df.head())
+
+
+# Reformat the date column 
+
+# Function to convert date to 'year-quarterStartMonth' format
+def format_quarter_start(date):
+    year = date.year
+    quarter = (date.month - 1) // 3 + 1
+    quarter_start_month = (quarter - 1) * 3 + 1
+    return f"{year}-{str(quarter_start_month).zfill(2)}"
+
+# Apply the function to reformat the index
+quarterly_df.index = quarterly_df.index.map(format_quarter_start)
+
+# Display the reformatted DataFrame
+print(quarterly_df.head())
+
+# Export in an xlsx file
+quarterly_df.to_csv('data_emp.csv')
+quarterly_df.to_excel('data_emp.xlsx', index=True, engine='openpyxl')
+
